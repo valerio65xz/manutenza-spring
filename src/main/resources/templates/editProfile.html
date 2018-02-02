@@ -1,0 +1,20 @@
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <title>Modifica priflo</title>
+    </head>
+
+    <body>
+        <h2>Modifica profilo</h2>
+
+        <form action="/editProfile/complete" method="POST">
+            Email: <input type="text" name="email" th:attr="value = ${email}"/><br>
+            Nome: <input type="text" name="firstName" th:attr="value =${firstName}"/><br>
+            Cognome: <input type="text" name="lastName" th:attr="value =${lastName}"/><br>
+            Data di nascita: <input type="text" name="birthday"/><br>
+            Codice fiscale: <input type="text" name="id"/><br>
+            <button type="submit">Conferma</button>
+        </form>
+
+    </body>
+</html>

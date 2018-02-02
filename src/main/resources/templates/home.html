@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <title>ManUtenza Spike Test!</title>
+
+        <!-- metadati di paypal -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    </head>
+
+    <body>
+        <h2>Scegliere l'operazione da svolgere</h2>
+
+        <!-- script per il login facebook -->
+        <div id="fb-root"></div>
+        <script>
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = 'https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v2.11&appId=233668646673605';
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+
+        <!-- diciamo che ho fatto una cosa poco carina. Ho fatto un bottone ibrido fra quello javascript e quello del form.
+        Questo perché se no Spring non riusciva più a gestire il login, e doveva esser fatto tutto in javascript.
+        Spring desidera un attributo scope con i permessi, che poi reindirizzerà al controllore nascosto FacebookConnect -->
+        <h3>Login Facebook</h3>
+        <form action="/connect/facebook" method="POST">
+            <input type="hidden" name="scope" value="email" />
+            <p><button type="submit" class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></button></p>
+        </form>
+
+        <h3>Test Paypal</h3>
+        <div id="paypal-button"></div>
+
+        <!-- script per la gestione del bottone paypal -->
+        <script>
+            paypal.Button.render({
+
+                //Qua si può modificare l'aspetto del bottone
+                env: 'production', // Or 'sandbox',
+
+                commit: true, // Show a 'Pay Now' button
+
+                style: {
+                    color: 'gold',
+                    size: 'small'
+                },
+
+                //Metodo per dove indirizzare. Reindirizzo al controllore per il setup del pagamento
+                payment: function(data, actions) {
+                    /*
+                     * Set up the payment here
+                     */
+                    location.href = '/paypal/checkout';
+                },
+
+                onAuthorize: function(data, actions) {
+                    /*
+                     * Execute the payment here
+                     */
+                },
+
+                onCancel: function(data, actions) {
+                    /*
+                     * Buyer cancelled the payment
+                     */
+                },
+
+                onError: function(err) {
+                    /*
+                     * An error occurred during the transaction
+                     */
+                }
+            }, '#paypal-button');
+        </script>
+
+        <h3>Verifica partita IVA</h3>
+        <form action="/IVA" method="POST">
+            <p><button type="submit">Verifica partita IVA</button></p>
+        </form>
+
+        <h3>Chat</h3>
+        <form action="/sender" method="POST">
+            <p><button type="submit">Invia un messaggio</button></p>
+        </form>
+    </body>
+</html>
