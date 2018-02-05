@@ -26,6 +26,8 @@ public class FacebookController {
         model.addAttribute("lastName", facebook.userOperations().getUserProfile().getLastName());
         model.addAttribute("email", facebook.userOperations().getUserProfile().getEmail());
 
+        System.out.println("Richiesto completamento profilo!");
+
         return "editProfile";
     }
 

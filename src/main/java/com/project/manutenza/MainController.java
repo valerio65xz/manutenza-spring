@@ -4,15 +4,13 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
+@CrossOrigin
 public class MainController {
 
     //Prova per Web Service RESTful
@@ -58,6 +56,13 @@ public class MainController {
     public String toObject(@RequestBody MiaStruttura miaStruttura) {
         return miaStruttura.getIndirizzi().get(1);
     }
+    @RequestMapping("/ajaxTest")
+    @ResponseBody
+    public Object ajaxTest(@RequestBody Object object) {
+        System.out.println("ci entro!");
+        return object;
+    }
+
 
     //Reindirizzamento pagina principale
     @RequestMapping("/")
@@ -83,24 +88,25 @@ public class MainController {
     public String checkPartitaIVA(@RequestParam("memberStateCode") String memberStateCode, @RequestParam("number") String number){
 
         //Chiamata Unirest presa grazie a Postman. Aggiunta la dependency nel POM
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = Unirest.post("http://ec.europa.eu/taxation_customs/vies/vatResponse.html")
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .header("Cache-Control", "no-cache")
                     .body("memberStateCode="+memberStateCode+"&number="+number)
                     .asString();
-        } catch (UnirestException e) {
+
+            //Debug per visualizzare la pagina
+            //return response.getBody();
+
+            //In questo modo ottengo il flag se la partita IVA è valida o meno. Se valida, si troverà la stringa "Yes, valid VAT number"
+            //Dentro il body, Altrimenti, non sarà valida.
+            return ""+response.getBody().contains("Yes, valid VAT number");
+
+        } catch (UnirestException | NullPointerException e) {
             e.printStackTrace();
+            return ""+e.getMessage();
         }
-
-        //Debug per visualizzare la pagina
-        //return response.getBody();
-
-        //In questo modo ottengo il flag se la partita IVA è valida o meno. Se valida, si troverà la stringa "Yes, valid VAT number"
-        //Dentro il body, Altrimenti, non sarà valida.
-        return ""+response.getBody().contains("Yes, valid VAT number");
-
     }
 
     //Indirizzamento al template di invio messaggio
