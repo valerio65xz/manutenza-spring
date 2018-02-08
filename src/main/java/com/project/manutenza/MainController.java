@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
-@CrossOrigin
 public class MainController {
 
     //Prova per Web Service RESTful
@@ -60,9 +59,14 @@ public class MainController {
     @ResponseBody
     public Object ajaxTest(@RequestBody Object object) {
         System.out.println("ci entro!");
+        //return "home";
         return object;
     }
 
+    @RequestMapping("/ajaxTestPost")
+    public String ajaxTestPost(@RequestParam("scope") String risposta){
+        return "home";
+    }
 
     //Reindirizzamento pagina principale
     @RequestMapping("/")
