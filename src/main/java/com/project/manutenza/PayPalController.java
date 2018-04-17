@@ -34,7 +34,7 @@ public class PayPalController {
         //La somma di questi 3 va nell'amount total
         Details details = new Details();
         details.setShipping("3.4");         //Dettagli spedizione
-        details.setSubtotal("999995");      //Subtotale di tutti gli items TASSE ESCLUSE
+        details.setSubtotal("95");      //Subtotale di tutti gli items TASSE ESCLUSE
         details.setTax("1.5");              //Totale tasse ITEMS.
 
         //Set item list. Serve cercare un item per visualizzare i dettagli del pagamento, altrimenti
@@ -45,7 +45,7 @@ public class PayPalController {
         item1.setCurrency("EUR");
         item1.setQuantity("1");
         item1.setTax("0.5");
-        item1.setPrice("999990");
+        item1.setPrice("90");
 
         Item item2 = new Item();
         item2.setDescription("Biscottini della fortuna dell'Ordine Oscuro.");
@@ -64,7 +64,7 @@ public class PayPalController {
         Amount amount = new Amount();
         amount.setCurrency("EUR");
         // Total must be equal to sum of shipping, tax and subtotal.
-        amount.setTotal("999999.9");
+        amount.setTotal("99.9");
         amount.setDetails(details);
 
         // Transaction information

@@ -5,6 +5,8 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
+import java.util.Date;
+
 @Component
 public class ChatReceiver {
 
@@ -22,8 +24,13 @@ public class ChatReceiver {
 
     @JmsListener(destination = "chat", containerFactory = "myFactory")
     public void receiveObjectMessage(Messaggio message) {
-        System.out.println("Received message: "+message.getMessaggio());
+        message.setTimestamp(new Date());
         ManUtenzaApplication.saveMessage(message);
+        System.out.println("Received message: "+message.getMessaggio());
+        System.out.println("Timestamp: "+message.getTimestamp());
+
+        //Salva nel DB il messaggio
+        ManUtenzaApplication.getRepository().save(message);
     }
 
 }

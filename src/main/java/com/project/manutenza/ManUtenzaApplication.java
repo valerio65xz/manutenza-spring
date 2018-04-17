@@ -1,6 +1,7 @@
 package com.project.manutenza;
 
 import com.project.manutenza.entities.Messaggio;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -15,17 +16,23 @@ import java.util.ArrayList;
 @SpringBootApplication
 public class ManUtenzaApplication extends SpringBootServletInitializer {
 
-	//Attributo e metodo per i messaggi
-	//ArrayList per i messaggi
+	//Attributo e metodo per i messaggi. ArrayList per i messaggi
 	private static ArrayList<Messaggio> listaMessaggi = new ArrayList<>();
 
-	//Salvataggio di un messaggio
+	//Oggetto persistence repository per salvare nel DB
+	private static MessaggioRepository repository;
+
+	//Salvataggio di un messaggio NELLA LISTA
 	public static void saveMessage(Messaggio message){
 		listaMessaggi.add(message);
 	}
 
 	public static ArrayList<Messaggio> getMessageList(){
 		return listaMessaggi;
+	}
+
+	public static MessaggioRepository getRepository(){
+		return repository;
 	}
 
 	@Override
@@ -45,7 +52,18 @@ public class ManUtenzaApplication extends SpringBootServletInitializer {
 		};
 	}
 
+	//Non so come far spuntare MessaggioRepository altrove. Per ora lo salvo e basta, e poi lo uso in ChatReceiver
+	@Bean
+	public CommandLineRunner demo(MessaggioRepository tempRepository) {
+		return (args) -> {
+			// save a couple of customers
+			repository = tempRepository;
+		};
+	}
+
 	public static void main(String[] args){
 		SpringApplication.run(ManUtenzaApplication.class, args);
 	}
+
+
 }

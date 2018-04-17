@@ -1,17 +1,31 @@
 package com.project.manutenza.entities;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.*;
+import java.util.Date;
+
+//Dichiaro entity per salvare nel DB
+@Entity
 public class Messaggio {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
     private String mittente;
     private String destinatario;
     private String messaggio;
-    private String timestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "timestamptz")
+    @DateTimeFormat(pattern="dd.MM HH:mm") //this is for display and parsing, not storage.
+    private Date timestamp;
 
     public Messaggio(){
         //Empty for WebService Constructor
     }
 
-    public Messaggio(String mittente, String destinatario, String messaggio, String timestamp) {
+    public Messaggio(String mittente, String destinatario, String messaggio, Date timestamp) {
         this.mittente = mittente;
         this.destinatario = destinatario;
         this.messaggio = messaggio;
@@ -42,11 +56,11 @@ public class Messaggio {
         this.messaggio = messaggio;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 }

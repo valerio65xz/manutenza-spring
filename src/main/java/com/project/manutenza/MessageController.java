@@ -19,9 +19,10 @@ public class MessageController {
         //ArrayList temporaneo per l'output
         ArrayList<Messaggio> outputMessaggi = new ArrayList<>();
 
-        //Scorro la lista di tutti i messaggi e prelevo solo quelli del destinatario.
+        //Scorro la lista di tutti i messaggi e prelevo quelli su mittente e destinatario.
         for (Messaggio message : ManUtenzaApplication.getMessageList()){
-            if (message.getDestinatario().equals(destinatario)) outputMessaggi.add(message);
+            //if (message.getDestinatario().equals(destinatario)) outputMessaggi.add(message);
+            if ((message.getDestinatario().equals(destinatario))&&(message.getMittente().equals(mittente))) outputMessaggi.add(message);
         }
 
         //Faccio la rimozione in un colpo dei messaggi copiati.

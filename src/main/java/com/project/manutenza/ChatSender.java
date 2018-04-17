@@ -48,6 +48,7 @@ public class ChatSender {
         return converter;
     }
 
+    //METODO VECCHIO
     //Ogni volta che invio un messaggio, ricarico la pagina stessa per inviare un nuovo messaggio
     @RequestMapping("/sender/sendMessage")
     @ResponseBody
