@@ -10,7 +10,8 @@ import java.util.Date;
 public class Messaggio {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(columnDefinition = "serial")
     private Long id;
     private String mittente;
     private String destinatario;
