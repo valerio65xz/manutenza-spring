@@ -31,4 +31,22 @@ public class MessageController {
         return outputMessaggi;
     }
 
+    //Stesso metodo, ma solo per destinatario
+    @RequestMapping("/checkMessageForReceiver")
+    @ResponseBody
+    public ArrayList<Messaggio> checkMessageForReceiver(@RequestParam("destinatario") String destinatario){
+
+        //ArrayList temporaneo per l'output
+        ArrayList<Messaggio> outputMessaggi = new ArrayList<>();
+
+        //Scorro la lista di tutti i messaggi e prelevo quelli su destinatario.
+        for (Messaggio message : ManUtenzaApplication.getMessageList())
+            if (message.getDestinatario().equals(destinatario)) outputMessaggi.add(message);
+
+        //Faccio la rimozione in un colpo dei messaggi copiati.
+        ManUtenzaApplication.getMessageList().removeAll(outputMessaggi);
+
+        return outputMessaggi;
+    }
+
 }

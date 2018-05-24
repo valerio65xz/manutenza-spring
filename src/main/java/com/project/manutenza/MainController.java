@@ -3,6 +3,7 @@ package com.project.manutenza;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.project.manutenza.entities.AndroidInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,6 +92,8 @@ public class MainController {
     @ResponseBody
     public String checkPartitaIVA(@RequestParam("memberStateCode") String memberStateCode, @RequestParam("number") String number){
 
+
+
         //Chiamata Unirest presa grazie a Postman. Aggiunta la dependency nel POM
         HttpResponse<String> response;
         try {
@@ -117,6 +120,26 @@ public class MainController {
     @RequestMapping("/sender")
     public String sender(){
         return "sender";
+    }
+
+    //Richiesta al DB della query per spedire ad Android
+    @RequestMapping("/androidQuery")
+    @ResponseBody
+    public ArrayList<AndroidInfo> androidQuery(@RequestParam("email") String email){
+
+        //Connetto al DB
+        AndroidQuery query = new AndroidQuery();
+        String response = query.connectToDB();
+
+        //Controllo se mi sono connesso, e allora cerco il manutente
+        if (response.equals("success")){
+
+            //Controllo allora se esiste quel manutente per quella mail, e se si ne prendo le info JSON. Altrimenti ritorno null
+            if (query.manutenteExists(email)) return query.getInfoAndSave();
+            else return null;
+        }
+        else return null;
+
     }
 
 }

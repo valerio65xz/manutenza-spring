@@ -26,4 +26,6 @@ public class UserController {
 
         return email +" "+ firstName +" "+ lastName +" "+ birthday +" "+ id;
     }
+
+
 }
