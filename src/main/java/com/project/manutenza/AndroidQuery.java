@@ -17,7 +17,7 @@ public class AndroidQuery {
         connection = null;
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/manutenza","postgres", "root");
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/manutenza2","postgres", "root");
             return "success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -28,7 +28,7 @@ public class AndroidQuery {
     //Metodo per vedere se esiste quel manutente per quell'email
     public boolean manutenteExists(String email){
 
-        Statement stmt = null;
+        Statement stmt;
         manutente_id=-1;
         try {
 
@@ -58,18 +58,18 @@ public class AndroidQuery {
     }
 
     public ArrayList<AndroidInfo> getInfoAndSave(){
-        Statement stmt = null;
+        Statement stmt;
         try {
 
             //Creo lo statement query per la select
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery( "SELECT richiesta.id AS id_richiesta, richiesta.titolo AS titolo_richiesta, richiesta.categoria AS categoria_richiesta, foto.link AS foto_richiesta, proposta.id AS id_proposta, proposta.prezzo AS prezzo_proposta, utente.nome AS nome_utente"
                     +" FROM richiesta, richiesta_foto, foto, proposta, utente, manutente"
-                    +" WHERE utente.id = richiesta.utente_id AND richiesta.id = richiesta_foto.richiesta_id AND richiesta_foto.listafoto_id = foto.id AND richiesta.id = proposta.richiesta_id AND manutente.id="+manutente_id
+                    +" WHERE utente.id = richiesta.utente_id AND richiesta.id = richiesta_foto.richiesta_id AND richiesta_foto.listafoto_id = foto.id AND richiesta.id = proposta.richiesta_id AND manutente.id="+manutente_id+" AND manutente.id <> utente.id"
                     +" AND proposta.accettato=true AND richiesta.stato='A'" );
 
             //Creo l'array dell'oggetto Android che conterrà le informazioni
-            ArrayList<AndroidInfo> androidInfos = new ArrayList<AndroidInfo>();
+            ArrayList<AndroidInfo> androidInfos = new ArrayList<>();
 
             //Per ogni record se esiste
             while ( rs.next() ) {
