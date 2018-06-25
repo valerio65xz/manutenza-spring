@@ -1,9 +1,11 @@
 package com.project.manutenza;
 
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.project.manutenza.entities.AndroidInfo;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,7 +71,7 @@ public class MainController {
         return "home";
     }
 
-    //Reindirizzamento pagina principale
+    //Reindirizzamento pagina principale. Prendo dei dati PayPal grezzi
     @RequestMapping("/")
     public String home(){
         return "home";
@@ -142,4 +144,51 @@ public class MainController {
 
     }
 
+    //Convalida della prestazione tramite QR CODE. Manutenza darà i soldi al manutente relativo
+    @RequestMapping("/validateJob")
+    @ResponseBody
+    public String validateJob(){
+
+        //Tramite la prima chiamata Unirest, ottengo l'access token per fare il pagamento
+        //PER GENERARE L'HEADER AUTHORIZATION, BISOGNA FARE LA RICHIESTA MANUALE SU POSTMAN E SELEZIONARE
+        //AUTHORIZATION = BASIC AUTH
+        HttpResponse<String> response = null;
+        try {
+            response = Unirest.post("https://api.sandbox.paypal.com/v1/oauth2/token")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Authorization", "Basic QWRxOFJtTzh1WExNdHdscFZRWmFtMjUwT3I5aXZGV0JCZjBaRUNpV2Q4NmxFUzRTZ1VlMDhBQ1JvSm1qalZHX2lDZVZiSXFzRW5CYW9nZGw6RU9RM01qaHNBZjA1RHNDNk8zSmVaTE1xMWVrSndybGJoRm9mc2ZRN2tpR0NPc2JZOElOYTlHTW04VDJ2Z0p0VGdMMVpDRUVlQlZLYzhXbF8=")
+                    .header("Cache-Control", "no-cache")
+                    .header("Postman-Token", "559955a3-b37d-4b44-9bfe-fc04db34355b")
+                    .body("grant_type=client_credentials")
+                    .asString();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return "Errore nel prelievo del token.";
+        }
+
+        //Sto casino per prendermi il token
+        JSONObject jsonObject = new JSONObject(response);
+        String body = jsonObject.getString("body");
+        JSONObject bodyJson = new JSONObject(body);
+        String accessToken = bodyJson.getString("access_token");
+
+        //Adesso con la seconda chiamata Unirest effettuo in effetti il pagamento al manutente
+        //Stesso discorso: su postman il token va su Authorization e si mette "bearer token"
+        //Sostituire SOLDI E EMAIL
+        try {
+            response = Unirest.post("https://api.sandbox.paypal.com/v1/payments/payouts")
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer "+accessToken)
+                    .header("Cache-Control", "no-cache")
+                    .header("Postman-Token", "32f3dff3-b92b-48c4-b639-2fa950fe76ff")
+                    .body("{\n  \"sender_batch_header\": {\n  \"email_subject\": \"Pagamento di lavoro concluso.\"\n  },\n  \"items\": [\n  {\n    \"recipient_type\": \"EMAIL\",\n    \"amount\": {\n    \"value\": \"10.01\",\n    \"currency\": \"EUR\"\n    },\n    \"note\": \"Grazie per aver utilizzato manutenza!\",\n    \"receiver\": \"manutente@manutenza.it\"\n  }\n  ]\n}")
+                    .asString();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return "Errore nel pagamento.";
+        }
+
+        return "success";
+
+    }
 }

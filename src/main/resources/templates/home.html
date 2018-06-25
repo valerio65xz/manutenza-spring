@@ -38,9 +38,11 @@
         <!-- script per la gestione del bottone paypal -->
         <script>
             paypal.Button.render({
+                env: 'sandbox', // Or 'sandbox',
 
-                //Qua si può modificare l'aspetto del bottone
-                env: 'production', // Or 'sandbox',
+                client: {
+                    sandbox:    'Adq8RmO8uXLMtwlpVQZam250Or9ivFWBBf0ZECiWd86lES4SgUe08ACRoJmjjVG_iCeVbIqsEnBaogdl'
+                },
 
                 commit: true, // Show a 'Pay Now' button
 
@@ -49,18 +51,28 @@
                     size: 'small'
                 },
 
-                //Metodo per dove indirizzare. Reindirizzo al controllore per il setup del pagamento
                 payment: function(data, actions) {
-                    /*
-                     * Set up the payment here
-                     */
-                    location.href = '/paypal/checkout';
+                    return actions.payment.create({
+                        payment: {
+                            transactions: [
+                                {
+                                    amount: {
+                                        total: '9.55',
+                                        currency: 'USD'
+                                    },
+                                    description: 'Pagamento per la prestazione lavorativa.'
+                                }
+                            ]
+                        }
+                    });
                 },
 
                 onAuthorize: function(data, actions) {
-                    /*
-                     * Execute the payment here
-                     */
+                    return actions.payment.execute().then(function(payment) {
+
+                        // The payment is complete!
+                        // You can now show a confirmation message to the customer
+                    });
                 },
 
                 onCancel: function(data, actions) {

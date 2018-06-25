@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,20 +16,21 @@ import java.util.List;
 public class PayPalController {
 
     // Replace these values with your clientId and secret. You can use these to get started right now.
-    private String clientId = "AYSq3RDGsmBLJE-otTkBtM-jBRd1TCQwFf9RGfwddNXWz0uFU9ztymylOhRS";
-    private String clientSecret = "EGnHDxD_qRPdaLdZz8iCr8N7_MzF-YHPTkjs6NKYQvQSBngp4PTTVWkPZRbL";
+    private String clientId = "Adq8RmO8uXLMtwlpVQZam250Or9ivFWBBf0ZECiWd86lES4SgUe08ACRoJmjjVG_iCeVbIqsEnBaogdl";
+    private String clientSecret = "EOQ3MjhsAf05DsC6O3JeZLMq1ekJwrlbhFofsfQ7kiGCOsbY8INa9GMm8T2vgJtTgL1ZCEEeBVKc8Wl_";
     private APIContext apiContext;  //Impostato come attributo per fare l'execute del pagamento
 
-    @RequestMapping("/paypal/checkout")
-    public String createPayment(){
+    @RequestMapping("/paypal/checkout_OLD")
+    public String createPayment(HttpServletRequest request){
         // Set payer details. Non so bene cosa potremmo mettergli
         Payer payer = new Payer();
         payer.setPaymentMethod("paypal");
 
         // Set redirect URLs. Uno per il cancellamento del pagamento, uno per il processamento
+        String IP = request.getLocalAddr();
         RedirectUrls redirectUrls = new RedirectUrls();
-        redirectUrls.setCancelUrl("http://localhost:8080/paypal/canceled");
-        redirectUrls.setReturnUrl("http://localhost:8080/paypal/process");
+        redirectUrls.setCancelUrl("http://"+IP+":8080/paypal/canceled");
+        redirectUrls.setReturnUrl("http://"+IP+":8080/paypal/process");
 
         // Set payment details. Si mette il prezzo totale, il prezzo della spedizione e le tasse
         //La somma di questi 3 va nell'amount total
