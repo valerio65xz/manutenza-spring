@@ -2,10 +2,7 @@ package com.project.manutenza;
 
 import com.project.manutenza.entities.AndroidInfo;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class AndroidQuery {
@@ -100,5 +97,25 @@ public class AndroidQuery {
             System.out.println("ERRORE: "+e.getMessage());
             return null;
         }
+    }
+
+    //Metodo per modificare lo stato della richiesta dopo un pagamento
+    public boolean completeRequest(int id){
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "UPDATE richiesta" +
+                            " SET stato='C'" +
+                            " FROM proposta" +
+                            " WHERE proposta.richiesta_id = richiesta.id AND proposta.id = "+id
+            );
+
+            preparedStatement.executeUpdate();
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

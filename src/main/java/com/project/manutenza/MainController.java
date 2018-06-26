@@ -5,7 +5,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.project.manutenza.entities.AndroidInfo;
+import com.project.manutenza.entities.Proposta;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,8 @@ public class MainController {
     //Consente di stabilire un ID richiesta, che si autoincrementa ad ogni richiesta HTTP
     private final AtomicLong counter = new AtomicLong();
 
+    @Autowired
+    private PropostaRepository propostaRepository;
 
     /* AREA RISERVATA AL DEBUG WEBSERIVCE REST
     //@RequestParam si prende i parametri GET dal link, e POST dall'header
@@ -147,7 +151,15 @@ public class MainController {
     //Convalida della prestazione tramite QR CODE. Manutenza darà i soldi al manutente relativo
     @RequestMapping("/validateJob")
     @ResponseBody
-    public String validateJob(){
+    public String validateJob(@RequestParam("id") Long id, @RequestParam("email") String email){
+
+        //Cerco nel DB se ho una proposta con l'ID ricevuto
+        Proposta proposta = propostaRepository.findById(id);
+        if (proposta==null){
+            System.out.println("Non esiste alcuna proposta con id: "+id);
+            return "Non esiste alcuna proposta con id: "+id;
+        }
+        else System.out.println("Proposta ID: "+proposta.getId());
 
         //Tramite la prima chiamata Unirest, ottengo l'access token per fare il pagamento
         //PER GENERARE L'HEADER AUTHORIZATION, BISOGNA FARE LA RICHIESTA MANUALE SU POSTMAN E SELEZIONARE
@@ -163,6 +175,7 @@ public class MainController {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            System.out.println("Errore nel prelievo del token.");
             return "Errore nel prelievo del token.";
         }
 
@@ -181,13 +194,25 @@ public class MainController {
                     .header("Authorization", "Bearer "+accessToken)
                     .header("Cache-Control", "no-cache")
                     .header("Postman-Token", "32f3dff3-b92b-48c4-b639-2fa950fe76ff")
-                    .body("{\n  \"sender_batch_header\": {\n  \"email_subject\": \"Pagamento di lavoro concluso.\"\n  },\n  \"items\": [\n  {\n    \"recipient_type\": \"EMAIL\",\n    \"amount\": {\n    \"value\": \"10.01\",\n    \"currency\": \"EUR\"\n    },\n    \"note\": \"Grazie per aver utilizzato manutenza!\",\n    \"receiver\": \"manutente@manutenza.it\"\n  }\n  ]\n}")
+                    .body("{\n  \"sender_batch_header\": {\n  \"email_subject\": \"Pagamento di lavoro concluso.\"\n  },\n  \"items\": [\n  {\n    \"recipient_type\": \"EMAIL\",\n    \"amount\": {\n    \"value\": \"10.01\",\n    \"currency\": \"EUR\"\n    },\n    \"note\": \"Grazie per aver utilizzato manutenza!\",\n    \"receiver\": \""+email+"\"\n  }\n  ]\n}")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            System.out.println("Errore nel pagamento.");
             return "Errore nel pagamento.";
         }
 
+        //Infine effettuo la query al DB per aggiornare lo stato della richiesta
+        AndroidQuery query = new AndroidQuery();
+        String responseDB = query.connectToDB();
+
+        //Controllo se mi sono connesso, e allora effettuo l'update. In caso di false o di non success, vi sarà errore
+        if (responseDB.equals("success")){
+            if (!query.completeRequest(proposta.getId().intValue())) return "Errore nel salvataggio nel DB. Il pagamento però è completato";
+        }
+        else return "Errore nel salvataggio nel DB. Il pagamento però è completato";
+
+        //Se tutto è andato per il verso giusto, avrò un success
         return "success";
 
     }
