@@ -2,6 +2,7 @@ package com.project.manutenza;
 
 import javax.jms.ConnectionFactory;
 
+import com.project.manutenza.entities.Chat;
 import com.project.manutenza.entities.Messaggio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -70,15 +71,15 @@ public class ChatSender {
     //Stesso metodo ma quando invio il messaggio dal web server in JSON
     @RequestMapping("/sender/sendObjectMessage")
     @ResponseBody
-    public String sendObjectMessage(@RequestBody Messaggio message) {
+    public String sendObjectMessage(@RequestBody Chat chat) {
 
         //Prelevo il template JMS tramite il contesto (
         JmsTemplate jmsTemplate = appContext.getBean(JmsTemplate.class);
 
         // Invio del messaggio. Attualmente controllo con questo metodo che ci sia effettivamente del testo, una stringa
         // Vuota o con soli spazi genera eccezioni di vario tipo. In caso sostituire poi con dei controlli a front-end
-        if (message!=null){
-            jmsTemplate.convertAndSend("chat", message);
+        if (chat!=null){
+            jmsTemplate.convertAndSend("chat", chat);
             return "Messaggio inviato";
         }
         else return "Messaggio non inviato. Formattazione non valida.";

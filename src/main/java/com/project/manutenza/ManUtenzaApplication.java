@@ -1,5 +1,6 @@
 package com.project.manutenza;
 
+import com.project.manutenza.entities.Chat;
 import com.project.manutenza.entities.Messaggio;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,23 +18,8 @@ import java.util.ArrayList;
 public class ManUtenzaApplication extends SpringBootServletInitializer {
 
 	//Attributo e metodo per i messaggi. ArrayList per i messaggi
-	private static ArrayList<Messaggio> listaMessaggi = new ArrayList<>();
+	protected static ArrayList<Chat> listaChat = new ArrayList<>();
 
-	//Oggetto persistence repository per salvare nel DB
-	private static MessaggioRepository repository;
-
-	//Salvataggio di un messaggio NELLA LISTA
-	public static void saveMessage(Messaggio message){
-		listaMessaggi.add(message);
-	}
-
-	public static ArrayList<Messaggio> getMessageList(){
-		return listaMessaggi;
-	}
-
-	public static MessaggioRepository getRepository(){
-		return repository;
-	}
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -49,15 +35,6 @@ public class ManUtenzaApplication extends SpringBootServletInitializer {
 				registry.addMapping("/**");
 				registry.addMapping(" https://www.facebook.com/**");
 			}
-		};
-	}
-
-	//Non so come far spuntare MessaggioRepository altrove. Per ora lo salvo e basta, e poi lo uso in ChatReceiver
-	@Bean
-	public CommandLineRunner demo(MessaggioRepository tempRepository) {
-		return (args) -> {
-			// save a couple of customers
-			repository = tempRepository;
 		};
 	}
 
