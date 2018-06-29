@@ -5,6 +5,7 @@ import java.util.Date;
 public class Messaggio {
 
     private String messaggio;
+    private String email;
     private Date timestamp;
 
     public Messaggio(){
@@ -13,6 +14,7 @@ public class Messaggio {
 
     public Messaggio(String messaggio, Date timestamp) {
         this.messaggio = messaggio;
+        this.email = email;
         this.timestamp = timestamp;
     }
 
@@ -30,5 +32,13 @@ public class Messaggio {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
