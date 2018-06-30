@@ -14,7 +14,7 @@ public class MessageController {
     //Link per ritornare la chat per determinato ID
     @RequestMapping("/checkMessageById")
     @ResponseBody
-    public Chat checkMessageById(@RequestParam("idProposta") int id){
+    public Chat checkMessageById(@RequestParam("idProposta") int id, @RequestParam("email") String email){
 
         //ArrayList temporaneo per l'output
         Chat outputChat = null;
@@ -22,8 +22,21 @@ public class MessageController {
         //Scorro la lista di tutte le chat e prelevo solo quella per quell'ID, rimuovendola dalla coda
         for (int i=0; i<ManUtenzaApplication.listaChat.size(); i++){
             if (ManUtenzaApplication.listaChat.get(i).getIdProposta()==id){
+
+                //Prendo la chat da ritornare in output
                 outputChat = ManUtenzaApplication.listaChat.get(i);
-                ManUtenzaApplication.listaChat.remove(i);
+
+                //Controllo di chi è letta la mail e setto il flag
+                if (email.equals(ManUtenzaApplication.listaChat.get(i).getUtenteEmail()))
+                    ManUtenzaApplication.listaChat.get(i).setReadByUtente(true);
+                else if (email.equals(ManUtenzaApplication.listaChat.get(i).getManutenteEmail()))
+                    ManUtenzaApplication.listaChat.get(i).setReadByManutente(true);
+
+                //Se tutti e due i flag sono true, allora rimuovo tale proposta
+                if ((ManUtenzaApplication.listaChat.get(i).isReadByUtente())&&(ManUtenzaApplication.listaChat.get(i).isReadByManutente()))
+                    ManUtenzaApplication.listaChat.remove(i);
+
+                //Dato che trovo la proposta, inutile continuare il ciclo
                 break;
             }
         }

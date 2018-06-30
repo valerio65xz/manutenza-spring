@@ -61,9 +61,9 @@ public class AndroidQuery {
             //Creo lo statement query per la select
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery( "SELECT richiesta.id AS id_richiesta, richiesta.titolo AS titolo_richiesta, richiesta.categoria AS categoria_richiesta, foto.link AS foto_richiesta, proposta.id AS id_proposta, proposta.prezzo AS prezzo_proposta, utente.nome AS nome_utente"
-                    +" FROM richiesta, richiesta_foto, foto, proposta, utente, manutente"
-                    +" WHERE utente.id = richiesta.utente_id AND richiesta.id = richiesta_foto.richiesta_id AND richiesta_foto.listafoto_id = foto.id AND richiesta.id = proposta.richiesta_id AND manutente.id="+manutente_id+" AND manutente.id <> utente.id"
-                    +" AND proposta.accettato=true AND richiesta.stato='A'" );
+                    +" FROM richiesta, richiesta_foto, foto, proposta, utente"
+                    +" WHERE utente.id = richiesta.utente_id AND richiesta.id = richiesta_foto.richiesta_id AND richiesta_foto.listafoto_id = foto.id AND richiesta.id = proposta.richiesta_id AND proposta.manutente_id="+manutente_id
+                    +" AND richiesta.stato='A'" );
 
             //Creo l'array dell'oggetto Android che conterrà le informazioni
             ArrayList<AndroidInfo> androidInfos = new ArrayList<>();
@@ -82,6 +82,7 @@ public class AndroidQuery {
 
                 //E creo un oggetto AndroidInfo e lo salvo nell'array
                 AndroidInfo info = new AndroidInfo(id_richiesta, titolo_richiesta, categoria_richiesta, foto_richiesta, id_proposta, prezzo_proposta, nome_utente);
+
                 androidInfos.add(info);
             }
 

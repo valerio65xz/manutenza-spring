@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,6 +27,10 @@ public class MainController {
 
     @Autowired
     private PropostaRepository propostaRepository;
+
+    //Id della proposta da convalidare. Dato che c'è un bug e validateJob() parte 2 volte per colpa di HttpRequest
+    //In questo modo si evita di pagare 2 volte;
+    private long idPropostaDuplicata = -1;
 
     /* AREA RISERVATA AL DEBUG WEBSERIVCE REST
     //@RequestParam si prende i parametri GET dal link, e POST dall'header
@@ -159,7 +164,15 @@ public class MainController {
             System.out.println("Non esiste alcuna proposta con id: "+id);
             return "Non esiste alcuna proposta con id: "+id;
         }
-        else System.out.println("Proposta ID: "+proposta.getId());
+        else System.out.println("Proposta ID: "+proposta.getId()+" Prezzo: "+proposta.getPrezzo());
+
+        //Controllo se ho già eseguito il pagamento per tale proposta. In tal caso ritorno success. Altrimenti cambio ID
+        if (idPropostaDuplicata == proposta.getId()) return "success";
+        else idPropostaDuplicata =  proposta.getId();
+
+        //Conversione double in una stringa con . come virgola e 2 cifre decimali. Formato PayPal di pagamento
+        String price = String.format ("%.2f", proposta.getPrezzo());
+        price=price.replace(',', '.');
 
         //Tramite la prima chiamata Unirest, ottengo l'access token per fare il pagamento
         //PER GENERARE L'HEADER AUTHORIZATION, BISOGNA FARE LA RICHIESTA MANUALE SU POSTMAN E SELEZIONARE
@@ -194,7 +207,7 @@ public class MainController {
                     .header("Authorization", "Bearer "+accessToken)
                     .header("Cache-Control", "no-cache")
                     .header("Postman-Token", "32f3dff3-b92b-48c4-b639-2fa950fe76ff")
-                    .body("{\n  \"sender_batch_header\": {\n  \"email_subject\": \"Pagamento di lavoro concluso.\"\n  },\n  \"items\": [\n  {\n    \"recipient_type\": \"EMAIL\",\n    \"amount\": {\n    \"value\": \"10.01\",\n    \"currency\": \"EUR\"\n    },\n    \"note\": \"Grazie per aver utilizzato manutenza!\",\n    \"receiver\": \""+email+"\"\n  }\n  ]\n}")
+                    .body("{\n  \"sender_batch_header\": {\n  \"email_subject\": \"Pagamento di lavoro concluso.\"\n  },\n  \"items\": [\n  {\n    \"recipient_type\": \"EMAIL\",\n    \"amount\": {\n    \"value\": \""+price+"\",\n    \"currency\": \"EUR\"\n    },\n    \"note\": \"Grazie per aver utilizzato manutenza!\",\n    \"receiver\": \""+email+"\"\n  }\n  ]\n}")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();

@@ -23,7 +23,7 @@ public class ChatReceiver {
             if ((ManUtenzaApplication.listaChat.get(i).getIdProposta()==chat.getIdProposta())){
                 ManUtenzaApplication.listaChat.get(i).getListaMessaggi().addAll(chat.getListaMessaggi());
                 firstTime=false;
-                System.out.println("Aggiunto alla chat con id: "+ManUtenzaApplication.listaChat.get(i).getIdProposta()+" un nuovo messaggio");
+                System.out.println("Nuovo messaggio aggiunto alla chat: "+ManUtenzaApplication.listaChat.get(i).getIdProposta()+" un nuovo messaggio");
             }
         }
 
