@@ -2,6 +2,9 @@ package com.project.manutenza.entities;
 
 import javax.persistence.*;
 
+/**
+ * Entity per la gestione di una Proposta. E' direttamente collegata alla tabella del DB "proposta"
+ */
 @Entity
 public class Proposta {
 

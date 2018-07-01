@@ -1,6 +1,5 @@
 package com.project.manutenza;
 
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -11,99 +10,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
+/** Controller principale del Web Service Spring */
 @Controller
 public class MainController {
 
-    //Prova per Web Service RESTful
-    //Consente un assemblamento della stringa su un parametro
-    private static final String template = "Hello, %s!";
-
-    //Consente di stabilire un ID richiesta, che si autoincrementa ad ogni richiesta HTTP
-    private final AtomicLong counter = new AtomicLong();
-
+    /** La repository per manipolare la propsta */
     @Autowired
     private PropostaRepository propostaRepository;
 
-    //Id della proposta da convalidare. Dato che c'è un bug e validateJob() parte 2 volte per colpa di HttpRequest
-    //In questo modo si evita di pagare 2 volte;
+    /** ID della proposta da convalidare per evitare pagaenti duplicati */
     private long idPropostaDuplicata = -1;
 
-    /* AREA RISERVATA AL DEBUG WEBSERIVCE REST
-    //@RequestParam si prende i parametri GET dal link, e POST dall'header
-    @RequestMapping("/greeting")
-    @ResponseBody
-    public Greeting greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Greeting(counter.incrementAndGet(), String.format(template, name));
-        //return new Greeting(1, "prova");
-    }
-
-    //Costruisco il greeting dall'oggetto JSON Passato
-    @RequestMapping("/JGreeting")
-    @ResponseBody
-    public String greetingFromJSON(@RequestBody Greeting greeting) {
-        return greeting.getContent();
-    }
-    */
-
-    //Costruisco l'oggetto e ne ritorno la sua codifica in JSON, per poi fare il test inviandola tramite POST HTTP
-    @RequestMapping("/toJSON")
-    @ResponseBody
-    public MiaStruttura toJSON() {
-        ArrayList<String> prova = new ArrayList<>();
-        prova.add("numero uno");
-        prova.add("secondo in carica");
-        prova.add("finiamo col terzo");
-        return new MiaStruttura(counter.incrementAndGet(), "Pinco Pallin0", (float)6.66, prova);
-    }
-
-    //L'oggetto arriva dal POST HTTP e decodificato mediante annotazione @RequestBody.
-    //Testo l'oggetto prelevando il primo elemento dell'attributo ArrayList
-    @RequestMapping("/toObject")
-    @ResponseBody
-    public String toObject(@RequestBody MiaStruttura miaStruttura) {
-        return miaStruttura.getIndirizzi().get(1);
-    }
-    @RequestMapping("/ajaxTest")
-    @ResponseBody
-    public Object ajaxTest(@RequestBody Object object) {
-        System.out.println("ci entro!");
-        //return "home";
-        return object;
-    }
-
-    @RequestMapping("/ajaxTestPost")
-    public String ajaxTestPost(@RequestParam("scope") String risposta){
-        return "home";
-    }
-
-    //Reindirizzamento pagina principale. Prendo dei dati PayPal grezzi
+    /** Reindirizzamento pagina principale.
+     * @return il template home */
     @RequestMapping("/")
     public String home(){
         return "home";
     }
 
-    //Reindirizzamento pagina paypal
-    @RequestMapping("/paypal")
-    public String paypal(){
-        return "paypal";
-    }
-
-    //Reindirizzamento verifica partita IVA
-    @RequestMapping("/IVA")
-    public String partitaIVA(){
-        return "partitaIVA";
-    }
-
-    //Processamento partita IVA
+    /** Processamento partita IVA, tramite il codice dello stato e della partita IVA, ne si determina l'esistenza o meno.
+     * @param   memberStateCode   il codice dello stato (sostanzialmente "IT")
+     * @param    number   numero della partita IVA
+     * @return   true se la partita IVA esiste, false se non esiste. In caso di errore, il messaggio dell'errore.*/
     @RequestMapping("/IVA/check")
     @ResponseBody
     public String checkPartitaIVA(@RequestParam("memberStateCode") String memberStateCode, @RequestParam("number") String number){
-
-
 
         //Chiamata Unirest presa grazie a Postman. Aggiunta la dependency nel POM
         HttpResponse<String> response;
@@ -127,13 +60,9 @@ public class MainController {
         }
     }
 
-    //Indirizzamento al template di invio messaggio
-    @RequestMapping("/sender")
-    public String sender(){
-        return "sender";
-    }
-
-    //Richiesta al DB della query per spedire ad Android
+    /** Esecuzione della query per prelevare l'elenco delle proposte per quel relativo manutente
+     * @param   email   email del manutente
+     * @return   l'ArrayList contenente l'elenco delle proposte */
     @RequestMapping("/androidQuery")
     @ResponseBody
     public ArrayList<AndroidInfo> androidQuery(@RequestParam("email") String email){
@@ -153,7 +82,12 @@ public class MainController {
 
     }
 
-    //Convalida della prestazione tramite QR CODE. Manutenza darà i soldi al manutente relativo
+    /** Convalida di una proposta dopo la lettura del QRCode dell'utente. Il lavoro viene definito "completato", pertanto
+     * viene pagato il mauntente per il prezzo del lavoro e viene aggiornato il DB impostando la richiesta di quella
+     * proposta come completata.
+     * @param   id   id della proposta da convalidare
+     * @param   email   email del manutente da pagare
+     * @return   "success" in caso di successo, altrimenti il messaggio di errore */
     @RequestMapping("/validateJob")
     @ResponseBody
     public String validateJob(@RequestParam("id") Long id, @RequestParam("email") String email){
@@ -200,7 +134,6 @@ public class MainController {
 
         //Adesso con la seconda chiamata Unirest effettuo in effetti il pagamento al manutente
         //Stesso discorso: su postman il token va su Authorization e si mette "bearer token"
-        //Sostituire SOLDI E EMAIL
         try {
             response = Unirest.post("https://api.sandbox.paypal.com/v1/payments/payouts")
                     .header("Content-Type", "application/json")

@@ -2,6 +2,13 @@ package com.project.manutenza.entities;
 
 import java.util.ArrayList;
 
+/**
+ * Entità [locale non del DB) per gestire la Chat. Ogni chat è identificata univocamente con l'ID della proposta ad
+ * essa associata. Ogni chat prevede un utente e un manutente, identificati mediante la propria mail. Per ognuno di
+ * loro un flag definisce chi dei due ha letto almeno una volta la chat. Poiché la chat è aggiunta ad una coda
+ * temporanea di messaggi non letti, una volta che verranno letti da entrambi, la coda verrà svuotata di tale chat.
+ * Infine una chat contiene un ArrayList di Messaggi.
+ */
 public class Chat {
 
     private int idProposta;

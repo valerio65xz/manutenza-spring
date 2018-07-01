@@ -5,11 +5,19 @@ import com.project.manutenza.entities.AndroidInfo;
 import java.sql.*;
 import java.util.ArrayList;
 
+/**
+ * Classe che mi crea la connessione al DB ed esegue la query principale per restituire l'elenco di proposte attive
+ * per quel manutente al client Android.
+ */
 public class AndroidQuery {
 
+    /** Oggetto per inizializzare e terminare la connessione con il database */
     private Connection connection;
+    /** ID del manutente relativo alle proposte */
     private int manutente_id;
 
+    /** Nel costruttore inizializzo la connessione al database
+     * @return  una stringa che identifica il successo o il fallimento della connessione */
     public String connectToDB(){
         connection = null;
         try {
@@ -22,7 +30,10 @@ public class AndroidQuery {
         }
     }
 
-    //Metodo per vedere se esiste quel manutente per quell'email
+    /** Controlla se esiste o meno nel database un manutente per quella mail.
+     * @param   email   l'email del manutente
+     * @return  true se esiste il manutente, false altrimenti.
+     * */
     public boolean manutenteExists(String email){
 
         Statement stmt;
@@ -54,6 +65,9 @@ public class AndroidQuery {
         }
     }
 
+    /**  Prelevo le informazioni relative all'elenco di proposte per quel manutente, effettuando la relativa query al database.
+     * @return  ArrayList contentente l'elenco proposte di quel manutente.
+     * Se non vi è alcuna proposta, viene ritornato un array null*/
     public ArrayList<AndroidInfo> getInfoAndSave(){
         Statement stmt;
         try {
@@ -82,7 +96,6 @@ public class AndroidQuery {
 
                 //E creo un oggetto AndroidInfo e lo salvo nell'array
                 AndroidInfo info = new AndroidInfo(id_richiesta, titolo_richiesta, categoria_richiesta, foto_richiesta, id_proposta, prezzo_proposta, nome_utente);
-
                 androidInfos.add(info);
             }
 
@@ -100,6 +113,9 @@ public class AndroidQuery {
         }
     }
 
+    /** Modifica lo stato della richesta da 'A' a 'C' dopo l'effettivo pagamento da ManUtenza al relativo manutente.
+     * @param  id  l'id della richiesta
+     * @return  true se la modifica è andata a buon fine, false altrimenti.*/
     //Metodo per modificare lo stato della richiesta dopo un pagamento
     public boolean completeRequest(int id){
         try {

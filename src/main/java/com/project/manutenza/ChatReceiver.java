@@ -1,17 +1,18 @@
 package com.project.manutenza;
 
 import com.project.manutenza.entities.Chat;
-import com.project.manutenza.entities.Messaggio;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
-import java.util.Date;
-
+/** Classe Component per la ricezione di messaggi dalla coda di messaggi JMS.
+ * Riceve un'oggetto Chat. */
 @Component
 public class ChatReceiver {
 
+    /** Preleva un oggetto chat dalla coda di messaggi. Una volta prelevato, viene aggiunta alla coda temporanea di chat
+     * la chat se è la prima volta che viene presentata. Altrimenti vengono aggiunti i messaggi all'ArrayList di quella
+     * relativa chat.
+     * @param   chat    la chat ricevuta dalla coda JMS */
     @JmsListener(destination = "chat", containerFactory = "myFactory")
     public void receiveObjectMessage(Chat chat) {
 

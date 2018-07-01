@@ -8,10 +8,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 
+/** Classe Controller per la gestione di chat e messaggi. Vengono prelevate le chat relative ad un ID, ad un utente
+ * o ad un manutente. Vengono rimosse se ee solo se sia l'utente che manutente hanno scaricato le chat relative,
+ * in tutti e 3 i casi.*/
 @Controller
 public class MessageController {
 
-    //Link per ritornare la chat per determinato ID
+    /** Restituisce la chat per quel determinato ID della proposta
+     * @param   id   id della proposta
+     * @param   email   email dell'utente o manutente che sta scaricando la chat
+     * @return   la relativa chat. */
     @RequestMapping("/checkMessageById")
     @ResponseBody
     public Chat checkMessageById(@RequestParam("idProposta") int id, @RequestParam("email") String email){
@@ -44,7 +50,9 @@ public class MessageController {
         return outputChat;
     }
 
-    //Link per ritornare la chat per determinato utente
+    /** Restituisco le chat relative ad un determinato utente
+     * @param   utenteEmail   email dell'utente
+     * @return   ArrayList contenente le chat relative a quell'utente */
     @RequestMapping("/checkMessageByUtente")
     @ResponseBody
     public ArrayList<Chat> checkMessageByUtente(@RequestParam("utente") String utenteEmail){
@@ -54,7 +62,6 @@ public class MessageController {
         ArrayList<Chat> deleteChat = new ArrayList<>();
 
         //Scorro la lista di tutte le chat e prelevo quelle con la mail di quell'utente
-
         for (int i=0; i<ManUtenzaApplication.listaChat.size(); i++){
 
             //Aggiungo alla coda dell'output le chat trovate e imposto il flag di lettura dell'utente
@@ -75,7 +82,9 @@ public class MessageController {
         return outputChat;
     }
 
-    //Link per ritornare la chat per determinato manutente
+    /** Restituisco le chat relative ad un determinato manutente
+     * @param   manutenteEmail   email del manutente
+     * @return   ArrayList contenente le chat relative a quel manutente */
     @RequestMapping("/checkMessageByManutente")
     @ResponseBody
     public ArrayList<Chat> checkMessageByManutente(@RequestParam("manutente") String manutenteEmail){
@@ -85,7 +94,6 @@ public class MessageController {
         ArrayList<Chat> deleteChat = new ArrayList<>();
 
         //Scorro la lista di tutte le chat e prelevo quelle con la mail di quell'manutente
-
         for (int i=0; i<ManUtenzaApplication.listaChat.size(); i++){
 
             //Aggiungo alla coda dell'output le chat trovate e imposto il flag di lettura dell'manutente

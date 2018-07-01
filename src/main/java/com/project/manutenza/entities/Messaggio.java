@@ -2,6 +2,11 @@ package com.project.manutenza.entities;
 
 import java.util.Date;
 
+/**
+ * Entità [locale non del DB) per gestire i messaggi. Ogni messaggio apparterrà ad una determinata Chat.
+ * Per ogni messaggio si specifica il corpo del messaggio, la mail di chi l'ha inviato (utente o manutente) e il
+ * timestamp della creazione del messaggio.
+ */
 public class Messaggio {
 
     private String messaggio;

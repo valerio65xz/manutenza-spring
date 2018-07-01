@@ -1,8 +1,6 @@
 package com.project.manutenza;
 
 import com.project.manutenza.entities.Chat;
-import com.project.manutenza.entities.Messaggio;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,13 +12,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import java.util.ArrayList;
 
+/** Classe di avvio principale di Spring */
 @SpringBootApplication
 public class ManUtenzaApplication extends SpringBootServletInitializer {
 
-	//Attributo e metodo per i messaggi. ArrayList per i messaggi
+	/** ArrayList contente le chat temporanee ancora non scaricate sia dall'utente che dal manutente */
 	protected static ArrayList<Chat> listaChat = new ArrayList<>();
 
-
+	/** Metodo di configurazione */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(ManUtenzaApplication.class);
@@ -38,6 +37,7 @@ public class ManUtenzaApplication extends SpringBootServletInitializer {
 		};
 	}
 
+	/** Metodo di avvio */
 	public static void main(String[] args){
 		SpringApplication.run(ManUtenzaApplication.class, args);
 	}
